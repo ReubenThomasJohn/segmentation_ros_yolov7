@@ -39,7 +39,12 @@ thop  # FLOPs computation
 # pycocotools>=2.0  # COCO mAP
 # roboflow
 
-# pyqt5
-# detectron2 put link
+# Additional
 
+# 1. install detectron2 using this link 
 # https://detectron2.readthedocs.io/en/latest/tutorials/install.html
+
+# 2. Install the model using:
+# https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-mask.pt
+
+# 3. Suggested CUDA 11.7
