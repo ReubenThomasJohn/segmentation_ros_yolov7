@@ -23,13 +23,19 @@ from detectron2.layers import paste_masks_in_image
 
 class Segmentation: 
     def __init__(self):
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cpu")
         print(self.device)
         with open('yolov7/data/hyp.scratch.mask.yaml') as f:
             self.hyp = yaml.load(f, Loader=yaml.FullLoader)
         weigths = torch.load('yolov7/yolov7-mask.pt')
         model = weigths['model']
-        self.model = model.half().to(self.device)
+
+        if self.device == torch.device("cuda:0"):
+            self.model = model.half().to(self.device)
+        else:
+            self.model = model.to(self.device)
+            self.model = self.model.float()
         # model = model.to(device)
         _ = self.model.eval()
 
@@ -38,8 +44,11 @@ class Segmentation:
         image_ = image.copy()
         image = transforms.ToTensor()(image)
         image = torch.tensor(np.array([image.numpy()]))
-        self.image = image.half().to(self.device)
-        # image = image.half()
+        if self.device == torch.device("cuda:0"):
+            self.image = image.half().to(self.device)
+        else:
+            self.image = image.to(self.device)
+        # self.image = self.image.half()
 
         self.output = self.model(self.image)
         
@@ -78,16 +87,16 @@ class Segmentation:
 
         return pnimg
 
-# segmentation = Segmentation()
+segmentation = Segmentation()
 
-# image = cv2.imread('/home/reuben/Project/YOLOV7-mask_branch/yolov7/inference/images/image3.jpg')  # 504x378 image
+image = cv2.imread('/home/reuben/Project/YOLOV7-mask_branch/yolov7/inference/images/image3.jpg')  # 504x378 image
 
-# segmentation.apply_yolo_model(image)
+segmentation.apply_yolo_model(image)
 
-# output = segmentation.post_process()
+output = segmentation.post_process()
 
-# cv2.imshow('image', output)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+cv2.imshow('image', output)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 
